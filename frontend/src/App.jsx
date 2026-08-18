@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 // Dynamic API Base URL (Works locally and on Vercel deployment)
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || '[https://ai-job-aggregator-backend-yn8i.onrender.com](https://ai-job-aggregator-backend-yn8i.onrender.com)';
 
 function App() {
   const [view, setView] = useState('login'); 
