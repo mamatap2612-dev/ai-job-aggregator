@@ -1,43 +1,43 @@
 // frontend/src/Login.jsx
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-function Login({ onLoginSuccess, switchToRegister }) {
+function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
   const handleLogin = async (e) => {
-  e.preventDefault();
-  try {
-    const BASE_URL =
-      import.meta.env.VITE_API_BASE_URL ||
-      process.env.REACT_APP_API_URL ||
-      "https://ai-job-aggregator-backend-yn8i.onrender.com";
+    e.preventDefault();
 
-    const response = await fetch(`${BASE_URL}/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
+    const rawUrl = import.meta.env.VITE_API_BASE_URL || "https://ai-job-aggregator-backend-yn8i.onrender.com";
+    const BASE_URL = rawUrl.replace(/\/$/, "");
+
+    try {
+      const response = await fetch(`${BASE_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
       const data = await response.json();
 
-      if (response.ok) {
-        setMessage('Login Successful!');
-        // Save user details to browser storage
-        localStorage.setItem('user', JSON.stringify(data.user));
-        if (onLoginSuccess) onLoginSuccess(data.user);
-      } else {
-        setMessage(data.message || 'Login failed');
+      if (!response.ok) {
+        throw new Error(data.error || "Login failed");
       }
-    } catch (error) {
-      setMessage('Error connecting to backend');
+
+      setMessage("Login successful!");
+      localStorage.setItem('user', JSON.stringify(data.user));
+      if (onLoginSuccess) onLoginSuccess(data.user);
+    } catch (err) {
+      console.error("Login Error:", err.message);
+      setMessage(err.message || "Error connecting to backend");
     }
   };
 
   return (
     <div style={{ padding: '20px', maxWidth: '300px' }}>
       <h2>Login</h2>
+      {message && <p>{message}</p>}
       <form onSubmit={handleLogin}>
         <div>
           <input
@@ -61,8 +61,6 @@ function Login({ onLoginSuccess, switchToRegister }) {
         <br />
         <button type="submit">Login</button>
       </form>
-      <p>{message}</p>
-      <button onClick={switchToRegister}>Need an account? Register</button>
     </div>
   );
 }
