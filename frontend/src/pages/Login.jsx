@@ -12,7 +12,7 @@ function Login({ onLoginSuccess, switchToRegister }) {
     const BASE_URL =
       import.meta.env.VITE_API_BASE_URL ||
       process.env.REACT_APP_API_URL ||
-      "http://localhost:5000";
+      "https://ai-job-aggregator-backend-yn8i.onrender.com";
 
     const response = await fetch(`${BASE_URL}/login`, {
       method: 'POST',
