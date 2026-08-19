@@ -6,8 +6,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const multer = require('multer');
-const pdfParseModule = require('pdf-parse');
-const pdfParse = typeof pdfParseModule === 'function' ? pdfParseModule : pdfParseModule.default;
+const { PDFParse } = require('pdf-parse');
 const fs = require('fs');
 
 const app = express();
@@ -96,8 +95,9 @@ app.post('/upload-resume', upload.single('resume'), async (req, res) => {
       text = fs.readFileSync(req.file.path, 'utf8');
     } else {
       const dataBuffer = fs.readFileSync(req.file.path);
-      const parsedData = await pdfParse(dataBuffer);
-      text = parsedData.text;
+const parser = new PDFParse({ data: dataBuffer });
+const parsedData = await parser.getText();
+text = parsedData.text;
     }
 
     if (fs.existsSync(req.file.path)) {
